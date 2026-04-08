@@ -1,164 +1,185 @@
-const profile = {
-  name: "Your Name",
-  tagline: "Student, creator, and future web developer.",
-  shortBio:
-    "I enjoy learning new technology, building creative projects, and turning ideas into simple experiences people can use.",
-  about:
-    "This website is your space to introduce yourself. You can talk about where you are from, what you are studying, what kind of projects you enjoy, and what you want to do next.",
-  currentFocusTitle: "Learning by building every week.",
-  currentFocusText:
-    "Right now I am focused on improving my design sense, practicing JavaScript, and creating projects that show my growth.",
-  facts: [
-    { label: "Based in", value: "India" },
-    { label: "Focus", value: "Frontend projects" },
-    { label: "Goal", value: "Grow every day" }
-  ],
-  skills: [
-    "HTML",
-    "CSS",
-    "JavaScript",
-    "Responsive Design",
-    "Problem Solving",
-    "Teamwork"
-  ],
-  values: [
-    "I like clear communication and simple solutions.",
-    "I enjoy learning from each project and improving step by step.",
-    "I want to build websites that feel useful, clean, and welcoming."
-  ],
-  timeline: [
-    {
-      year: "2026",
-      title: "Created my personal website",
-      description: "Started building a place online to share my work and story."
-    },
-    {
-      year: "2025",
-      title: "Explored web development",
-      description: "Learned the basics of page structure, styling, and interaction."
-    },
-    {
-      year: "Next",
-      title: "Build more portfolio projects",
-      description: "Planning to create stronger projects and expand my skills."
-    }
-  ],
-  contacts: [
-    { label: "Email", value: "yourname@example.com", href: "mailto:yourname@example.com" },
-    { label: "Instagram", value: "@yourhandle", href: "https://instagram.com/" },
-    { label: "LinkedIn", value: "Your profile", href: "https://linkedin.com/" }
-  ]
+const elements = {
+  form: document.getElementById("searchForm"),
+  cityInput: document.getElementById("cityInput"),
+  locationBtn: document.getElementById("locationBtn"),
+  status: document.getElementById("status"),
+  currentPanel: document.getElementById("currentPanel"),
+  forecastPanel: document.getElementById("forecastPanel"),
+  locationName: document.getElementById("locationName"),
+  temp: document.getElementById("temp"),
+  condition: document.getElementById("condition"),
+  feelsLike: document.getElementById("feelsLike"),
+  wind: document.getElementById("wind"),
+  humidity: document.getElementById("humidity"),
+  forecastGrid: document.getElementById("forecastGrid")
 };
 
-function setText(id, value) {
-  const element = document.getElementById(id);
-  if (element) {
-    element.textContent = value;
+const weatherCodes = {
+  0: "Clear sky",
+  1: "Mainly clear",
+  2: "Partly cloudy",
+  3: "Overcast",
+  45: "Fog",
+  48: "Rime fog",
+  51: "Light drizzle",
+  53: "Drizzle",
+  55: "Heavy drizzle",
+  61: "Light rain",
+  63: "Rain",
+  65: "Heavy rain",
+  71: "Light snow",
+  73: "Snow",
+  75: "Heavy snow",
+  80: "Rain showers",
+  81: "Showers",
+  82: "Heavy showers",
+  95: "Thunderstorm"
+};
+
+function toF(celsius) {
+  return (celsius * 9) / 5 + 32;
+}
+
+function toMph(kmh) {
+  return kmh * 0.621371;
+}
+
+function formatTemp(celsius) {
+  return `${Math.round(toF(celsius))}°F`;
+}
+
+function setStatus(message, isError = false) {
+  elements.status.textContent = message;
+  elements.status.classList.toggle("error", isError);
+}
+
+function renderCurrentWeather(place, current, daily) {
+  elements.locationName.textContent = `${place.name}, ${place.country}`;
+  elements.temp.textContent = formatTemp(current.temperature_2m);
+  elements.condition.textContent = weatherCodes[current.weather_code] || "Unavailable";
+  elements.feelsLike.textContent = formatTemp(current.apparent_temperature);
+  elements.wind.textContent = `${Math.round(toMph(current.wind_speed_10m))} mph`;
+  elements.humidity.textContent = `${current.relative_humidity_2m}%`;
+
+  renderForecast(daily);
+
+  elements.currentPanel.hidden = false;
+  elements.forecastPanel.hidden = false;
+}
+
+function renderForecast(daily) {
+  const items = daily.time.slice(0, 5).map((day, index) => {
+    const date = new Date(day);
+    const dayName = date.toLocaleDateString("en-US", { weekday: "short" });
+    const high = formatTemp(daily.temperature_2m_max[index]);
+    const low = formatTemp(daily.temperature_2m_min[index]);
+    const code = daily.weather_code[index];
+
+    return `
+      <article class="forecast-item">
+        <p>${dayName}</p>
+        <strong>${high} / ${low}</strong>
+        <span>${weatherCodes[code] || `Code ${code}`}</span>
+      </article>
+    `;
+  });
+
+  elements.forecastGrid.innerHTML = items.join("");
+}
+
+async function fetchWeather(lat, lon) {
+  const params = new URLSearchParams({
+    latitude: lat,
+    longitude: lon,
+    current: "temperature_2m,apparent_temperature,weather_code,relative_humidity_2m,wind_speed_10m",
+    daily: "temperature_2m_max,temperature_2m_min,weather_code",
+    timezone: "auto"
+  });
+
+  const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error("Could not load weather data.");
+  }
+
+  return response.json();
+}
+
+async function geocodeCity(cityName) {
+  const params = new URLSearchParams({ name: cityName, count: 1, language: "en", format: "json" });
+  const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?${params.toString()}`);
+
+  if (!response.ok) {
+    throw new Error("Could not find that city.");
+  }
+
+  const data = await response.json();
+  if (!data.results || data.results.length === 0) {
+    throw new Error("No matching city found.");
+  }
+
+  return data.results[0];
+}
+
+async function loadByCoordinates(lat, lon, placeLabel) {
+  try {
+    setStatus("Loading weather...");
+    const weather = await fetchWeather(lat, lon);
+    renderCurrentWeather(placeLabel, weather.current, weather.daily);
+    setStatus(`Updated ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`);
+  } catch (error) {
+    setStatus(error.message, true);
   }
 }
 
-function renderFacts() {
-  const factsContainer = document.getElementById("quickFacts");
-
-  factsContainer.innerHTML = profile.facts
-    .map(
-      (fact) => `
-        <div class="stat">
-          <strong>${fact.value}</strong>
-          <span>${fact.label}</span>
-        </div>
-      `
-    )
-    .join("");
+async function loadByCity(cityName) {
+  try {
+    setStatus(`Searching for ${cityName}...`);
+    const place = await geocodeCity(cityName);
+    await loadByCoordinates(place.latitude, place.longitude, place);
+  } catch (error) {
+    setStatus(error.message, true);
+  }
 }
 
-function renderSkills() {
-  const skillsContainer = document.getElementById("skillsList");
+function loadByBrowserLocation() {
+  if (!navigator.geolocation) {
+    setStatus("Geolocation is not available in this browser.", true);
+    return;
+  }
 
-  skillsContainer.innerHTML = profile.skills
-    .map((skill) => `<span class="chip">${skill}</span>`)
-    .join("");
+  setStatus("Getting your location...");
+  navigator.geolocation.getCurrentPosition(
+    async ({ coords }) => {
+      const place = { name: "Your location", country: "" };
+      await loadByCoordinates(coords.latitude, coords.longitude, place);
+    },
+    () => {
+      setStatus("Could not access your location.", true);
+    },
+    { timeout: 10000 }
+  );
 }
 
-function renderValues() {
-  const valuesContainer = document.getElementById("valuesList");
+elements.form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const cityName = elements.cityInput.value.trim();
 
-  valuesContainer.innerHTML = profile.values.map((value) => `<li>${value}</li>`).join("");
-}
+  if (!cityName) {
+    setStatus("Please enter a city name.", true);
+    return;
+  }
 
-function renderTimeline() {
-  const timelineContainer = document.getElementById("timeline");
+  loadByCity(cityName);
+});
 
-  timelineContainer.innerHTML = profile.timeline
-    .map(
-      (item) => `
-        <article class="timeline-item">
-          <div>
-            <strong>${item.year}</strong>
-          </div>
-          <div>
-            <span>${item.title}</span>
-            <p>${item.description}</p>
-          </div>
-        </article>
-      `
-    )
-    .join("");
-}
+elements.locationBtn.addEventListener("click", loadByBrowserLocation);
 
-function renderContacts() {
-  const contactContainer = document.getElementById("contactLinks");
-
-  contactContainer.innerHTML = profile.contacts
-    .map(
-      (contact) => `
-        <a class="contact-link" href="${contact.href}" target="_blank" rel="noreferrer">
-          <strong>${contact.label}</strong>
-          <span>${contact.value}</span>
-        </a>
-      `
-    )
-    .join("");
-}
-
-function addRevealClasses() {
-  const sections = document.querySelectorAll(".hero-copy, .hero-card, .panel, .footer");
-
-  sections.forEach((section, index) => {
-    section.classList.add("reveal");
-    section.classList.add(`delay-${Math.min(index, 3)}`);
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js").catch(() => {
+      setStatus("Offline mode unavailable right now.", true);
+    });
   });
 }
 
-function initializeSite() {
-  setText("heroName", profile.name);
-  setText("heroTagline", profile.tagline);
-  setText("heroBio", profile.shortBio);
-  setText("focusTitle", profile.currentFocusTitle);
-  setText("focusText", profile.currentFocusText);
-  setText("aboutText", profile.about);
-  setText(
-    "contactText",
-    "You can reach me through the links below. I am always open to learning, collaboration, and new ideas."
-  );
-  setText("footerText", `${profile.name} | Personal Website`);
-
-  const primaryLink = document.getElementById("primaryLink");
-  const emailContact = profile.contacts.find((contact) => contact.label === "Email");
-
-  if (primaryLink && emailContact) {
-    primaryLink.href = emailContact.href;
-  }
-
-  document.title = `${profile.name} | About Me`;
-
-  renderFacts();
-  renderSkills();
-  renderValues();
-  renderTimeline();
-  renderContacts();
-  addRevealClasses();
-}
-
-initializeSite();
-
+loadByCity("New York");

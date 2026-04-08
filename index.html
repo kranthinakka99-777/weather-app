@@ -3,110 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About Me | Personal Website</title>
-  <meta
-    name="description"
-    content="A personal website introducing who I am, what I do, and how to get in touch."
-  >
+  <title>Weather Now</title>
+  <meta name="description" content="Check current weather and a 5-day forecast for any city.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap"
-    rel="stylesheet"
-  >
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#14304a">
+  <meta name="theme-color" content="#0f172a">
 </head>
 <body>
-  <div class="page-shell">
-    <header class="hero">
-      <nav class="topbar">
-        <span class="brand">About Me</span>
-        <a class="nav-link" href="#contact">Contact</a>
-      </nav>
+  <main class="app-shell">
+    <header class="hero card">
+      <p class="kicker">Live weather</p>
+      <h1>Weather Now</h1>
+      <p class="subtitle">Search a city to get current conditions and a 5-day snapshot.</p>
 
-      <div class="hero-grid">
-        <section class="hero-copy">
-          <p class="eyebrow">Personal Introduction</p>
-          <h1 id="heroName">Your Name</h1>
-          <p class="hero-tagline" id="heroTagline">A short line about who you are.</p>
-          <p class="hero-bio" id="heroBio">
-            This site is a simple place to introduce yourself, your work, and your goals.
-          </p>
-
-          <div class="hero-actions">
-            <a class="button button-primary" id="primaryLink" href="#contact">Let's Talk</a>
-            <a class="button button-secondary" href="#about">Read More</a>
-          </div>
-        </section>
-
-        <aside class="hero-card">
-          <p class="card-label">Now</p>
-          <h2 id="focusTitle">Building skills and meaningful projects.</h2>
-          <p id="focusText">
-            Add your current focus here so visitors quickly understand what you care about.
-          </p>
-          <div class="stat-list" id="quickFacts"></div>
-        </aside>
-      </div>
+      <form id="searchForm" class="search-row" autocomplete="off">
+        <label for="cityInput" class="sr-only">City name</label>
+        <input id="cityInput" name="city" type="text" placeholder="Enter city (e.g. Seattle)">
+        <button type="submit">Search</button>
+        <button type="button" id="locationBtn" class="ghost">Use my location</button>
+      </form>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
     </header>
 
-    <main>
-      <section class="panel" id="about">
-        <div class="section-heading">
-          <p class="eyebrow">About</p>
-          <h2>Who I am</h2>
-        </div>
-        <p class="lead" id="aboutText">
-          Replace this text with your story, interests, and the kind of work you enjoy.
-        </p>
-      </section>
-
-      <section class="content-grid">
-        <article class="panel">
-          <div class="section-heading">
-            <p class="eyebrow">Strengths</p>
-            <h2>Skills</h2>
-          </div>
-          <div class="chip-wrap" id="skillsList"></div>
+    <section class="current card" id="currentPanel" hidden>
+      <div>
+        <p class="kicker" id="locationName">—</p>
+        <h2 id="temp">--°F</h2>
+        <p id="condition">--</p>
+      </div>
+      <div class="meta-grid">
+        <article>
+          <p>Feels like</p>
+          <strong id="feelsLike">--°F</strong>
         </article>
-
-        <article class="panel">
-          <div class="section-heading">
-            <p class="eyebrow">Highlights</p>
-            <h2>What I value</h2>
-          </div>
-          <ul class="value-list" id="valuesList"></ul>
+        <article>
+          <p>Wind</p>
+          <strong id="wind">-- mph</strong>
         </article>
-      </section>
+        <article>
+          <p>Humidity</p>
+          <strong id="humidity">--%</strong>
+        </article>
+      </div>
+    </section>
 
-      <section class="panel">
-        <div class="section-heading">
-          <p class="eyebrow">Journey</p>
-          <h2>Recent milestones</h2>
-        </div>
-        <div class="timeline" id="timeline"></div>
-      </section>
-
-      <section class="panel contact-panel" id="contact">
-        <div>
-          <p class="eyebrow">Connect</p>
-          <h2>Let's build something great</h2>
-          <p id="contactText">
-            Add your email or social links here so people know how to reach you.
-          </p>
-        </div>
-        <div class="contact-links" id="contactLinks"></div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <p id="footerText">Made with care.</p>
-    </footer>
-  </div>
+    <section class="forecast card" id="forecastPanel" hidden>
+      <div class="panel-title">
+        <h3>5-day forecast</h3>
+        <p>Daily high / low + weather code</p>
+      </div>
+      <div id="forecastGrid" class="forecast-grid"></div>
+    </section>
+  </main>
 
   <script src="script.js"></script>
 </body>
 </html>
-
