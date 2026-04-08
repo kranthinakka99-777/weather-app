@@ -1,0 +1,15 @@
+{
+  "name": "Personal About Me Site",
+  "short_name": "About Me",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f4efe7",
+  "theme_color": "#14304a",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

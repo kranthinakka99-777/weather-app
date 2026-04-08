@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Me | Personal Website</title>
+  <meta
+    name="description"
+    content="A personal website introducing who I am, what I do, and how to get in touch."
+  >
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#14304a">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <nav class="topbar">
+        <span class="brand">About Me</span>
+        <a class="nav-link" href="#contact">Contact</a>
+      </nav>
+
+      <div class="hero-grid">
+        <section class="hero-copy">
+          <p class="eyebrow">Personal Introduction</p>
+          <h1 id="heroName">Your Name</h1>
+          <p class="hero-tagline" id="heroTagline">A short line about who you are.</p>
+          <p class="hero-bio" id="heroBio">
+            This site is a simple place to introduce yourself, your work, and your goals.
+          </p>
+
+          <div class="hero-actions">
+            <a class="button button-primary" id="primaryLink" href="#contact">Let's Talk</a>
+            <a class="button button-secondary" href="#about">Read More</a>
+          </div>
+        </section>
+
+        <aside class="hero-card">
+          <p class="card-label">Now</p>
+          <h2 id="focusTitle">Building skills and meaningful projects.</h2>
+          <p id="focusText">
+            Add your current focus here so visitors quickly understand what you care about.
+          </p>
+          <div class="stat-list" id="quickFacts"></div>
+        </aside>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel" id="about">
+        <div class="section-heading">
+          <p class="eyebrow">About</p>
+          <h2>Who I am</h2>
+        </div>
+        <p class="lead" id="aboutText">
+          Replace this text with your story, interests, and the kind of work you enjoy.
+        </p>
+      </section>
+
+      <section class="content-grid">
+        <article class="panel">
+          <div class="section-heading">
+            <p class="eyebrow">Strengths</p>
+            <h2>Skills</h2>
+          </div>
+          <div class="chip-wrap" id="skillsList"></div>
+        </article>
+
+        <article class="panel">
+          <div class="section-heading">
+            <p class="eyebrow">Highlights</p>
+            <h2>What I value</h2>
+          </div>
+          <ul class="value-list" id="valuesList"></ul>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <p class="eyebrow">Journey</p>
+          <h2>Recent milestones</h2>
+        </div>
+        <div class="timeline" id="timeline"></div>
+      </section>
+
+      <section class="panel contact-panel" id="contact">
+        <div>
+          <p class="eyebrow">Connect</p>
+          <h2>Let's build something great</h2>
+          <p id="contactText">
+            Add your email or social links here so people know how to reach you.
+          </p>
+        </div>
+        <div class="contact-links" id="contactLinks"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p id="footerText">Made with care.</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
