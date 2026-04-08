@@ -1,10 +1,11 @@
 {
-  "name": "Personal About Me Site",
-  "short_name": "About Me",
+  "name": "Weather Now",
+  "short_name": "Weather",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#f4efe7",
-  "theme_color": "#14304a",
+  "background_color": "#020617",
+  "theme_color": "#0f172a",
+  "description": "Current weather and 5-day forecast",
   "icons": [
     {
       "src": "icon.png",
@@ -13,4 +14,3 @@
     }
   ]
 }
-
